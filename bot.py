@@ -21,6 +21,7 @@ from db import (
     delete_all_expenses,
 )
 from utils import parse_expense_message, format_expenses_with_total, format_amount
+from keepalive import start_keepalive_server, start_self_ping
 
 
 router = Router()
@@ -232,6 +233,17 @@ async def main() -> None:
     token = os.getenv("BOT_TOKEN")
     if not token:
         raise RuntimeError("BOT_TOKEN is not set. Put it in a .env file.")
+
+    # Start lightweight HTTP server for free-hosting keepalive pings
+    try:
+        start_keepalive_server()
+        keepalive_url = os.getenv("KEEPALIVE_URL")
+        if keepalive_url:
+            # Optional: self-ping if an external uptime monitor isn't set yet
+            start_self_ping(keepalive_url, int(os.getenv("KEEPALIVE_INTERVAL", "300")))
+        logging.info("Keepalive HTTP server started. HEALTH: GET /health")
+    except Exception:
+        logging.exception("Failed to start keepalive server (non-fatal)")
 
     await init_db()
 

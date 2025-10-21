@@ -29,6 +29,11 @@ BOT_TOKEN=1234567890:REPLACE_WITH_YOUR_BOT_TOKEN
 # DB_PATH=expenses.db  # ixtiyoriy
 # STICKER_WELCOME_ID=...  # ixtiyoriy
 # STICKER_SUCCESS_ID=...  # ixtiyoriy
+# --- Keepalive (bepul hosting) ---
+# PORT=8080                 # PaaS belgilasa avtomatik olinadi
+# KEEPALIVE_PORT=8080       # PORT bo'lmasa shu ishlatiladi
+# KEEPALIVE_URL=https://app-url.example.com/health
+# KEEPALIVE_INTERVAL=300    # soniya (default 300)
 ```
 
 4) Botni ishga tushiring:
@@ -54,6 +59,20 @@ python bot.py
 - Fayl: `expenses.db` (yoki `DB_PATH` orqali o'zgartiring)
 - Jadval: `expenses (id, user_id, item, amount, date, category)`
 - `date` qiymati `YYYY-MM-DD` formatida saqlanadi
+
+## Bepul hostingda "uxlab qolmaslik" (keepalive)
+
+- Kod ichiga minimal HTTP server qo'shildi: `GET /health` uchun `200 OK` qaytaradi.
+- PaaS odatda `PORT` muhit o'zgaruvchisini beradi — server shu portda tinglaydi.
+- Agar `.env` ichida `KEEPALIVE_URL` ko'rsatsangiz, bot ushbu URL'ni `KEEPALIVE_INTERVAL` bo'yicha o'zi ping qilib turadi.
+- Tavsiya: UptimeRobot yoki PaaS healthcheck bilan `https://<sizning-app-urlingiz>/health` manzilini 5 daqiqada bir ping qiling.
+
+Misol (`.env`):
+
+```
+KEEPALIVE_URL=https://your-app.onrender.com/health
+KEEPALIVE_INTERVAL=300
+```
 
 ## Yozish formati va toifalar
 
